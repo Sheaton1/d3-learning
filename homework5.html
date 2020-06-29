@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>作业五：用 Vega-Lite 实现多视图可视化</title>
+  </head>
+  <body>
+    <h1>作业五：用 Vega-Lite 实现多视图可视化</h1>
+    <p>1. 完成一个散点图 + 折线图的层叠可视化。</p>
+    <p>2. 将 1 中可视化并置。</p>
+    <p>3. 完成一个散点图矩阵。</p>
+    <p>4. 完成一个 small multiples。</p>
+
+    <div id="layer"></div>
+    <div id="concat"></div>
+    <div id="splom"></div>
+    <div id="small-multiples"></div>
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <script>
+      const scatterplotSpec = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2, LABEL: 'A' },
+            { A: 3.5, B: 3.7, C: 4.9, LABEL: 'A' },
+            { A: 3.9, B: 3.8, C: 6.2, LABEL: 'A' },
+            { A: 3.2, B: 3.0, C: 5.3, LABEL: 'A' },
+            { A: 3.6, B: 3.0, C: 4.4, LABEL: 'B' },
+            { A: 3.7, B: 3.6, C: 4.7, LABEL: 'B' }
+          ]
+        },
+        mark: 'point',
+        encoding: {
+          x: {field: 'A', type: 'quantitative'},
+          y: {field: 'B', type: 'quantitative'}
+        }
+      }
+
+      // vegaEmbed()
+    </script>
+  </body>
+</html>

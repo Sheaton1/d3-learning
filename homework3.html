@@ -1,0 +1,122 @@
+<html>
+  <head>
+    <title>作业三：用 D3 实现散点图</title>
+  </head>
+  <body>
+    <h1>作业三：用 D3 实现散点图。功能要求如下：</h1>
+    <p>数据：Array，数组对象包含多个属性。</p>
+    <p>可视化：点、坐标轴。</p>
+    <p>视觉映射：X、Y。</p>
+    <p>交互：刷选、平移和缩放（不需同时支持）。</p>
+
+    <div id="example1"></div>
+    <div id="example2"></div>
+    <div id="vis"></div>
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    
+    <script>
+      // Do homework here
+      const data = [
+        { A: 3.2, B: 3.7, C: 4.2 },
+        { A: 3.5, B: 3.7, C: 4.9 },
+        { A: 3.9, B: 3.8, C: 6.2 },
+        { A: 3.2, B: 3.0, C: 5.3 },
+        { A: 3.6, B: 3.0, C: 4.4 },
+        { A: 3.7, B: 3.6, C: 4.7 }
+      ]
+
+      // 初始化画布
+      const CANVAS = [400, 400]   // 画布长宽
+      const MARGIN = 10           // 画布内边距
+      const svg = d3.select('body')
+        .append('svg')
+        .attr('width', CANVAS[0])
+        .attr('height', CANVAS[1])
+
+      // 构建散点图标尺和坐标轴：d3-scale、d3-axis
+      const XATTR = "A"
+      const YATTR = "B"
+      // const domains = ?
+      const ranges = [
+        [0 + MARGIN, CANVAS[0] - MARGIN], 
+        [CANVAS[1] - MARGIN, 0 + MARGIN]
+      ]
+      // const scales = ?
+
+      // 绘制坐标轴
+      // X 轴
+      svg.append('g')
+        .attr('transform', `translate(0, ${ranges[1][0]})`)
+        // .call(?)
+      // Y 轴
+      svg.append('g')
+        .attr('transform', `translate(${ranges[0][0]}, 0)`)
+        // .call(?)
+      
+      // 绘制点
+      svg.selectAll('circle')
+        .data(data)
+        .enter()
+        .append('circle')
+        // .attr(?)
+        // .attr(?)
+
+      const INTERACTION = "brush"
+      if (INTERACTION == "brush") {
+        // 构建刷选交互：d3-brush
+      } else if (INTERACTION == "zoom") {
+        // 构建平移、缩放交互：d3-zoom
+      }
+    </script>
+
+    <script>
+      // 提供例子的代码，不用管
+      const spec1 = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2 },
+            { A: 3.5, B: 3.7, C: 4.9 },
+            { A: 3.9, B: 3.8, C: 6.2 },
+            { A: 3.2, B: 3.0, C: 5.3 },
+            { A: 3.6, B: 3.0, C: 4.4 },
+            { A: 3.7, B: 3.6, C: 4.7 }
+          ]
+        },
+        selection: {
+          brush: {type: 'interval'},
+        },
+        mark: 'point',
+        encoding: {
+          x: {field: 'A', type: 'quantitative'},
+          y: {field: 'B', type: 'quantitative'}
+        }
+      }
+      const spec2 = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2 },
+            { A: 3.5, B: 3.7, C: 4.9 },
+            { A: 3.9, B: 3.8, C: 6.2 },
+            { A: 3.2, B: 3.0, C: 5.3 },
+            { A: 3.6, B: 3.0, C: 4.4 },
+            { A: 3.7, B: 3.6, C: 4.7 }
+          ]
+        },
+        selection: {
+          zoom: {type: 'interval', bind: 'scales', zoom: 'wheel'}
+        },
+        mark: 'point',
+        encoding: {
+          x: {field: 'A', type: 'quantitative'},
+          y: {field: 'B', type: 'quantitative'}
+        }
+      }
+      vegaEmbed('#example1', spec1)
+      vegaEmbed('#example2', spec2)
+    </script>
+  </body>
+</html>

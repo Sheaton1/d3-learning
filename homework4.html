@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>作业四：用 Vega-Lite 实现散点图、直方图和折线图</title>
+  </head>
+  <body>
+    <h1>作业四：用 Vega-Lite 实现散点图、直方图和折线图</h1>
+    <p>功能不做要求了，自己随便玩玩探索下吧，做出三个图就行。</p>
+
+    <div id="scatterplot"></div>
+    <div id="histogram"></div>
+    <div id="linechart"></div>
+    
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <script>
+      const scatterplotSpec = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2 },
+            { A: 3.5, B: 3.7, C: 4.9 },
+            { A: 3.9, B: 3.8, C: 6.2 },
+            { A: 3.2, B: 3.0, C: 5.3 },
+            { A: 3.6, B: 3.0, C: 4.4 },
+            { A: 3.7, B: 3.6, C: 4.7 }
+          ]
+        },
+        mark: 'point',
+        encoding: {
+          x: {field: 'A', type: 'quantitative'},
+          y: {field: 'B', type: 'quantitative'}
+        }
+      }
+
+      vegaEmbed('#scatterplot', scatterplotSpec)
+    </script>
+  </body>
+</html>

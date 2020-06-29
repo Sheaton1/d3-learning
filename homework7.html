@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>作业七：应用 Vega-Lite</title>
+  </head>
+  <body>
+    <h1>作业七：应用 Vega-Lite</h1>
+    <p>封装 D3 散点图 A（作业三）和 Vega-Lite 散点图 B（见 class VLScatterplot）</p>
+    <p>实现 A 中刷选高亮 B，B 中刷选高亮 A 的交互。</p>
+    <p>最好实现的优雅一点。</p>
+    <div id="vis"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script>
+      // 封装 Vega-Lite 散点图
+      class VLScatterplot {
+        constructor() {
+          this.spec = {
+            data: {
+              values: [
+                { A: 3.2, B: 3.7, C: 4.2 },
+                { A: 3.5, B: 3.7, C: 4.9 },
+                { A: 3.9, B: 3.8, C: 6.2 },
+                { A: 3.2, B: 3.0, C: 5.3 },
+                { A: 3.6, B: 3.0, C: 4.4 },
+                { A: 3.7, B: 3.6, C: 4.7 }
+              ]
+            },
+            selection: {
+              brush: {type: 'interval'}
+            },
+            mark: 'point',
+            encoding: {
+              x: {field: 'A', type: 'quantitative'},
+              y: {field: 'B', type: 'quantitative'}
+            }
+          }
+          this.view = null
+        }
+
+        async render(selector) {
+          // 获取 Vega View 实例
+          this.view = (await vegaEmbed(selector, this.spec)).view
+
+          // 监听刷选交互事件
+          this.view.addDataListener('brush_store', (name, value) => {
+            console.log(name, value)
+          })
+        }
+
+        getSelection() {
+          return this.view.data('brush_store')
+        }
+
+        /*
+        setSelection() {
+          this.view.data(
+            'brush_store', 
+            // TODO: values
+          )
+          this.view.runAsync()
+        }
+        */
+      }
+
+      const test = new VLScatterplot()
+      test.render('#vis')
+    </script>
+  </body>
+</html>
