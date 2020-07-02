@@ -12,12 +12,12 @@
     <div id="example1"></div>
     <div id="example2"></div>
     <div id="vis"></div>
-    
+
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-    
+
     <script>
       // Do homework here
       const data = [
@@ -31,46 +31,82 @@
 
       // 初始化画布
       const CANVAS = [400, 400]   // 画布长宽
-      const MARGIN = 10           // 画布内边距
-      const svg = d3.select('body')
-        .append('svg')
-        .attr('width', CANVAS[0])
-        .attr('height', CANVAS[1])
+      const MARGIN = 30           // 画布内边距
+      const svg = d3.select('#vis')
+              .append('svg')
+              .attr('width', CANVAS[0])
+              .attr('height', CANVAS[1])
 
       // 构建散点图标尺和坐标轴：d3-scale、d3-axis
       const XATTR = "A"
       const YATTR = "B"
-      // const domains = ?
+      const domains = [0,4]
       const ranges = [
-        [0 + MARGIN, CANVAS[0] - MARGIN], 
+        [0 + MARGIN, CANVAS[0] - MARGIN],
         [CANVAS[1] - MARGIN, 0 + MARGIN]
       ]
-      // const scales = ?
+      const scales = d3.scaleLinear()
+              .domain(domains)
+      const x = d3.scaleLinear()
+              .domain([0,4])
+              .range([MARGIN,CANVAS[0]-MARGIN])
+      const y = d3.scaleLinear()
+              .domain([0,4])
+              .range([CANVAS[1]-MARGIN,MARGIN])
 
       // 绘制坐标轴
       // X 轴
-      svg.append('g')
-        .attr('transform', `translate(0, ${ranges[1][0]})`)
-        // .call(?)
+      const xAxis = svg.append('g')
+              .attr('transform', `translate(0, ${ranges[1][0]})`)
+              .call(d3.axisBottom(x))
+              .call(g=>g.select('.domain').remove())
+              .call(g=>g.append('text')
+                      .attr('x', CANVAS[0]+MARGIN)
+                      .attr('y',0)
+                      .text(data[XATTR]))
       // Y 轴
-      svg.append('g')
-        .attr('transform', `translate(${ranges[0][0]}, 0)`)
-        // .call(?)
-      
+      const yAxis = svg.append('g')
+              .attr('transform', `translate(${ranges[0][0]}, 0)`)
+              .call(d3.axisLeft(y))
+              .call(g=>g.select('.domain').remove())
+              .call(g=>g.select('.tick:last-of-type text').clone()
+                      .attr('x',0)
+                      .attr('text-anchor','start')
+                      .text(data[YATTR]))
+
       // 绘制点
-      svg.selectAll('circle')
-        .data(data)
-        .enter()
-        .append('circle')
-        // .attr(?)
-        // .attr(?)
+      const gDot = svg.append('g')
+              .selectAll('circle')
+              .data(data)
+              .enter()
+              .append('circle')
+              .attr('transform',d=>`translate(${x(d[XATTR])},${y(d[YATTR])})`)
+              .attr('stroke','steelblue')
+              .attr('stroke-width',2)
+              .attr('r',3)
+              .attr('fill','none')
 
       // 构建交互
-      const INTERACTION = "brush"
+      const INTERACTION = "zoom"
       if (INTERACTION == "brush") {
         // 构建刷选交互：d3-brush
+        const brush = d3.brush()
+        svg.call(brush)
       } else if (INTERACTION == "zoom") {
         // 构建平移、缩放交互：d3-zoom
+        const gx = svg.append("g");
+        const gy = svg.append("g");
+        const zoom = d3.zoom().on('zoom',zoomed)
+        svg.call(zoom).call(zoom.transform,d3.zoomIdentity)
+
+        function zoomed() {
+          const transform = d3.event.transform;
+          const zx = transform.rescaleX(x).interpolate(d3.interpolateRound);
+          const zy = transform.rescaleY(y).interpolate(d3.interpolateRound);
+          gDot.attr("transform", transform).attr("stroke-width", 5 / transform.k);
+          gx.call(xAxis, zx);
+          gy.call(yAxis, zy);
+        }
       }
     </script>
 
