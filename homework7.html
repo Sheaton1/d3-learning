@@ -7,25 +7,32 @@
     <p>封装 D3 散点图 A（作业三）和 Vega-Lite 散点图 B（见 class VLScatterplot）</p>
     <p>实现 A 中刷选高亮 B，B 中刷选高亮 A 的交互。</p>
     <p>最好实现的优雅一点。</p>
+    <div id="d3Vis"></div>
     <div id="vis"></div>
-    
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>
+
+      // 没做完
+
+      const data = [
+        { A: 3.2, B: 3.7, C: 4.2 },
+        { A: 3.5, B: 3.7, C: 4.9 },
+        { A: 3.9, B: 3.8, C: 6.2 },
+        { A: 3.2, B: 3.0, C: 5.3 },
+        { A: 3.6, B: 3.0, C: 4.4 },
+        { A: 3.7, B: 3.6, C: 4.7 }
+      ]
+
       // 封装 Vega-Lite 散点图
       class VLScatterplot {
         constructor() {
           this.spec = {
             data: {
-              values: [
-                { A: 3.2, B: 3.7, C: 4.2 },
-                { A: 3.5, B: 3.7, C: 4.9 },
-                { A: 3.9, B: 3.8, C: 6.2 },
-                { A: 3.2, B: 3.0, C: 5.3 },
-                { A: 3.6, B: 3.0, C: 4.4 },
-                { A: 3.7, B: 3.6, C: 4.7 }
-              ]
+              values: data
             },
             selection: {
               brush: {type: 'interval'}
@@ -45,18 +52,19 @@
 
           // 监听刷选交互事件
           this.view.addDataListener('brush_store', (name, value) => {
-            console.log(name, value)
+            console.log(this.view)
+            // this.view.data = value
           })
         }
 
         getSelection() {
-          return this.view.data('brush_store')
+          return this.view
         }
 
         /*
         setSelection() {
           this.view.data(
-            'brush_store', 
+            'brush_store',
             // TODO: values
           )
           this.view.runAsync()
@@ -64,8 +72,101 @@
         */
       }
 
+      // 封装 d3 散点图
+      class D3Scatterplot {
+        constructor(selector) {
+          // 初始化画布
+          this.selection = []
+
+          const CANVAS = [400, 400]   // 画布长宽
+          const MARGIN = 30           // 画布内边距
+          const svg = d3.select(selector)
+                  .append('svg')
+                  .attr('width', CANVAS[0])
+                  .attr('height', CANVAS[1])
+
+          const r = 3  // 散点半径
+          // 构建散点图标尺和坐标轴：d3-scale、d3-axis
+          const XATTR = "A"
+          const YATTR = "B"
+          const domains = [0,4]
+          const ranges = [
+            [0 + MARGIN, CANVAS[0] - MARGIN],
+            [CANVAS[1] - MARGIN, 0 + MARGIN]
+          ]
+          const scales = d3.scaleLinear()
+                  .domain(domains)
+          const x = d3.scaleLinear()
+                  .domain([0,4])
+                  .range([MARGIN,CANVAS[0]-MARGIN])
+          const y = d3.scaleLinear()
+                  .domain([0,4])
+                  .range([CANVAS[1]-MARGIN,MARGIN])
+
+          // 绘制坐标轴
+          // X 轴
+          svg.append('g')
+                  .attr('transform', `translate(0, ${ranges[1][0]})`)
+                  .call(d3.axisBottom(x))
+                  .call(g=>g.append('text')
+                          .attr('x', CANVAS[0]+MARGIN)
+                          .attr('y',0)
+                          .text(data[XATTR]))
+
+          // Y 轴
+          svg.append('g')
+                  .attr('transform', `translate(${ranges[0][0]}, 0)`)
+                  .call(d3.axisLeft(y))
+                  .call(g=>g.select('.tick:last-of-type text').clone()
+                          .attr('x',0)
+                          .attr('text-anchor','start')
+                          .text(data[YATTR]))
+
+          // 绘制点
+          const gDot = svg.append('g')
+                  .selectAll('circle')
+                  .data(data)
+                  .enter()
+                  .append('circle')
+                  .attr('transform',d=>`translate(${x(d[XATTR])},${y(d[YATTR])})`)
+                  .attr('stroke','black')
+                  .attr('stroke-width',2)
+                  .attr('r',r)
+                  .attr('fill','none')
+
+          // 构建交互
+          // 构建刷选交互：d3-brush
+          const brush = d3.brush().on('start',unselect).on('brush',brushing)
+          svg.append('g').call(brush)
+
+          function unselect() {
+            gDot.style('stroke','black')
+          }
+
+          // 判断是否在选中区域并修改样式
+          function brushing() {
+            let selection = d3.event.selection
+            this.selection = []
+            if(selection) {
+              const [[x0,y0],[x1,y1]] = selection
+              gDot.style('stroke',d=>{
+                if(x0 <= x(d[XATTR]) - r && x(d[XATTR]) + r < x1 && y0 <= y(d[YATTR]) - r && y(d[YATTR]) + r < y1){
+                  this.selection.push(d)
+                  return 'steelblue'
+                }
+                else
+                  return 'black'
+                // return  (x0 <= x(d[XATTR]) - r && x(d[XATTR]) + r < x1 && y0 <= y(d[YATTR]) - r && y(d[YATTR]) + r < y1)?'steelblue':'black'
+              })
+            }
+          }
+        }
+
+      }
       const test = new VLScatterplot()
+      console.log(test.getSelection())
       test.render('#vis')
+      const test1 = new D3Scatterplot('#d3Vis')
     </script>
   </body>
 </html>

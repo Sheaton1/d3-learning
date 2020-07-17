@@ -9,11 +9,15 @@
     <p>3. 完成一个散点图矩阵。</p>
     <p>4. 完成一个 small multiples。</p>
 
+    作业一
     <div id="layer"></div>
+    作业二
     <div id="concat"></div>
+    作业三
     <div id="splom"></div>
+    作业四
     <div id="small-multiples"></div>
-    
+
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
@@ -35,10 +39,103 @@
         encoding: {
           x: {field: 'A', type: 'quantitative'},
           y: {field: 'B', type: 'quantitative'}
+        },
+        layer: [{
+          mark:'point',
+        },{
+          mark: 'line'
+        }]
+      }
+
+      const scatterplotSpec2 = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2, LABEL: 'A' },
+            { A: 3.5, B: 3.7, C: 4.9, LABEL: 'A' },
+            { A: 3.9, B: 3.8, C: 6.2, LABEL: 'A' },
+            { A: 3.2, B: 3.0, C: 5.3, LABEL: 'A' },
+            { A: 3.6, B: 3.0, C: 4.4, LABEL: 'B' },
+            { A: 3.7, B: 3.6, C: 4.7, LABEL: 'B' }
+          ]
+        },
+        hconcat :[
+          {
+            mark: 'point',
+            encoding: {
+              x: {field: 'A', type: 'quantitative'},
+              y: {field: 'B', type: 'quantitative'}
+            }
+          },{
+            mark: 'line',
+            encoding: {
+              x: {field: 'A', type: 'quantitative',scale:{domain:[0,4]}},
+              y: {field: 'B', type: 'quantitative'}
+            }
+          }
+        ],
+      }
+
+      const scatterplotSpec3 = {
+        repeat:{
+          row: ['A', 'B', 'C'],
+          column: ['C', 'B', 'A']
+        },
+        spec: {
+          data: {
+            values: [
+              { A: 3.2, B: 3.7, C: 4.2, LABEL: 'A' },
+              { A: 3.5, B: 3.7, C: 4.9, LABEL: 'A' },
+              { A: 3.9, B: 3.8, C: 6.2, LABEL: 'A' },
+              { A: 3.2, B: 3.0, C: 5.3, LABEL: 'A' },
+              { A: 3.6, B: 3.0, C: 4.4, LABEL: 'B' },
+              { A: 3.7, B: 3.6, C: 4.7, LABEL: 'B' }
+            ]
+          },
+          mark: 'point',
+          encoding: {
+            x: {field: {repeat: 'column'}, type: 'quantitative'},
+            y: {
+              field: {repeat: 'row'},
+              type: 'quantitative',
+              axis: {minExtent: 10}
+            }
+          }
         }
       }
 
+      const scatterplotSpec4 = {
+        data: {
+          values: [
+            { A: 3.2, B: 3.7, C: 4.2, LABEL: 'A' },
+            { A: 3.5, B: 3.7, C: 4.9, LABEL: 'A' },
+            { A: 3.9, B: 3.8, C: 6.2, LABEL: 'A' },
+            { A: 3.2, B: 3.0, C: 5.3, LABEL: 'A' },
+            { A: 3.6, B: 3.0, C: 4.4, LABEL: 'B' },
+            { A: 3.7, B: 3.6, C: 4.7, LABEL: 'B' }
+          ]
+        },
+        mark: 'point',
+        encoding: {
+          column: {field: 'LABEL', type: 'nominal'},
+          x: {field: 'A', type: 'quantitative'},
+          y: {
+            field: 'B',
+            type: 'quantitative',
+          }
+        }
+      }
+
+
       // vegaEmbed()
+      vegaEmbed('#layer',scatterplotSpec)
+      vegaEmbed('#concat',scatterplotSpec2)
+      vegaEmbed('#splom',scatterplotSpec3)
+      vegaEmbed('#small-multiples',scatterplotSpec4)
     </script>
   </body>
+  <style>
+    .vega-embed {
+      display: block;
+    }
+  </style>
 </html>

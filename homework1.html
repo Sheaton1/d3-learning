@@ -1,25 +1,77 @@
 <html>
   <head>
     <title>作业一：用 D3 实现柱状图</title>
+    <style>
+      #vis, #vis2 {
+        padding: 5px;
+      }
+      .bar {
+        margin-bottom: 1px;
+      }
+    </style>
   </head>
   <body>
     <h1>作业一：用 D3 实现柱状图</h1>
     <img src="./images/1.png" />
     <div id="vis"></div>
-
+    <div id="vis2"></div>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script>
       // 注：script 区域以外也可按需编辑
-      const data = [30, 86, 168, 281, 303, 365]
+      const data = [30, 86, 168, 281, 303, 365],
+              bar_height = 20,
+              bar_padding = 1,
+              svg_height = (bar_height+bar_padding)*data.length,
+              svg_width = 370
+      const scale = d3.scaleLinear()
+              .domain([0,d3.max(data)])
+              .range([0,svg_width]);
 
       // TODO：选择元素
+      const vis = d3.select('#vis').append('svg').attr('width',svg_width).attr('height',svg_height)
 
       // TODO：绑定数据
+      const rects = vis
+              .selectAll('g')
+              .data(data)
+              .join('g')
+              .attr('transform',(d,i)=>{
+                return 'translate(0,'+i*(bar_height+bar_padding)+')'
+              })
 
       // TODO：修改元素
+      rects
+              .append('rect')
+              .attr('width',(d)=>{
+                return scale(d)
+              })
+              .attr('height',bar_height)
+              .attr('fill', 'steelblue')
+      rects
+              .append("text")
+              .text((d)=>{
+                return d
+              })
+              .attr('fill','white')
+              .attr('text-anchor','end')
+              .attr('font-size',12)
+              .attr('x',(d)=>{
+                return scale(d)-4
+              })
+              .attr('y',bar_height/2+5)
 
       // TODO：如果你是用 div 完成的，如何改用 svg 完成，如果你是用 svg 完成的，如何改用 div 完成？写在 HTML 中。
-      
+      // 这啥意思？
+      const vis2 = d3.select('#vis2').append('div')
+      const bars = vis2.selectAll('div')
+              .data(data)
+              .join('div')
+              .attr('class','bar')
+              .style('height',20)
+              .style('width',(d)=>{
+                return d
+              })
+              .style('background-color','steelblue')
     </script>
   </body>
 </html>
